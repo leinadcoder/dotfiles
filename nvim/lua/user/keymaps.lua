@@ -2,9 +2,13 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
--- Reselect visual selection after indenting
-vim.keymap.set('v', '<', '<gv')
-vim.keymap.set('v', '>', '>gv')
+-- Shift+Tab unindent a line
+vim.keymap.set('i', '<S-Tab>', '<Esc><<i')
+vim.keymap.set('n', '<S-Tab>', '<<')
+
+-- Visual mode tab/untab identation
+vim.keymap.set('v', '<S-Tab>', '<gv')
+vim.keymap.set('v', '<Tab>', '>gv')
 
 -- Paste replace visual selection without copying it
 vim.keymap.set('v', 'p', '"_dp')
