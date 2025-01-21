@@ -11,11 +11,13 @@ vim.opt.breakindent = true
 vim.opt.number = true
 vim.opt.relativenumber = true
 
-vim.opt.wildmode = 'longest:full,full' -- Complete the longest common match, and allow tabbing the results to fully complete them
+-- Complete the longest common match, and allow tabbing the results to fully complete them
+vim.opt.wildmode = 'longest:full,full'
 
 vim.opt.title = true
 
-vim.opt.mouse = 'a' -- Enable mouse for all modes
+-- Enable mouse for all modes
+vim.opt.mouse = 'a'
 
 vim.opt.termguicolors = true
 
@@ -24,9 +26,11 @@ vim.opt.spell = true
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 
-vim.opt.list = true -- Enable the below list of characters
-vim.opt.listchars = { tab = '▸ ', trail = '·', nbsp = '␣' } 
-vim.opt.fillchars:append({ eob = ' '}) -- Remove the ~ from end of buffer
+-- Enabled the below list of characters
+vim.opt.list = true
+vim.opt.listchars = { tab = '▸ ', trail = '·', nbsp = '␣' }
+-- Remove the ~ from the end of the buffer
+vim.opt.fillchars:append({ eob = ' '})
 
 vim.opt.splitbelow = true
 vim.opt.splitright = true
@@ -34,10 +38,15 @@ vim.opt.splitright = true
 vim.opt.scrolloff = 8
 vim.opt.sidescrolloff = 8
 
-vim.opt.clipboard = 'unnamedplus' -- Use system clipboard
-vim.opt.confirm = true -- Ask for confirmation instead of show error message
+-- Use system clipboard
+vim.opt.clipboard = 'unnamedplus'
 
-vim.opt.undofile = true -- Persist undo
-vim.opt.backup = true -- Automatically save a backup file
-vim.opt.backupdir:remove('.') -- Keep backups out of the current directory
+-- Ask for confirmation instead of show error message
+vim.opt.confirm = true
+-- Persist undo
+vim.opt.undofile = true
+-- Automatically save a backup file
+vim.opt.backup = true
+-- Keep backups out of the current directory
+vim.opt.backupdir:remove('.')
 
