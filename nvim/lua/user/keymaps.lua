@@ -28,3 +28,5 @@ vim.keymap.set('v', '<A-k>', ":move '<-2<CR>gv=gv")
 vim.keymap.set('n', '<A-j>', ':move .+1<CR>')
 vim.keymap.set('n', '<A-k>', ':move .-2<CR>')
 
+-- Close buffer
+vim.keymap.set('n', '<leader>w', ':bd<CR>')

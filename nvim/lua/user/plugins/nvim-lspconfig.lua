@@ -35,6 +35,8 @@ return {
 
     require('lspconfig').docker_compose_language_service.setup {}
 
+    require('lspconfig').html.setup{}
+
     -- Lua
     require('lspconfig').lua_ls.setup {
       capabilities = capabilities,
@@ -49,7 +51,24 @@ return {
       }
     }
 
-    require('lspconfig').pyright.setup {}
+    local venv_path = vim.fn.getcwd() .. '/.venv'
+    if vim.fn.isdirectory(venv_path) == 1 then
+        local python_path = venv_path .. '/bin/python'
+
+        require('lspconfig').pyright.setup({
+            settings = {
+                python = {
+                    pythonPath = python_path,
+                    analysis =  {
+                      extraPaths = {"./src"}, -- Point to src directory
+                      autoSearchPaths = true
+                    }
+                }
+            }
+        })
+    else
+      require('lspconfig').pyright.setup {}
+    end
 
     require('lspconfig').tailwindcss.setup({
       capabilities = capabilities
