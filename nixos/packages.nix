@@ -14,6 +14,7 @@
     swaynotificationcenter
     hyprpaper
     hyprsunset
+    hyprlock
 
     # Audio, brightness and system tray helpers
     pavucontrol
@@ -24,6 +25,7 @@
     libnotify
     wlogout
     fastfetch
+    gawk
 
     # Wayland utilities
     wl-clipboard

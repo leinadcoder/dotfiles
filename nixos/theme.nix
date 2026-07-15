@@ -1,38 +1,48 @@
-# Shared color palette migrated from the original Qtile theme.
+# Shared visual language for the Hyprland desktop.
 # Import it from visual modules with:
 #   let theme = import ./theme.nix; in
 {
   colors = {
-    background = "#0f101a";
-    backgroundAlpha = "#0f101aee";
-    backgroundRgba = "rgba(15, 16, 26, 0.95)";
+    background = "#0b1017";
+    backgroundAlpha = "#0b1017f2";
+    backgroundRgba = "rgba(11, 16, 23, 0.95)";
 
-    grey = "#37383b";
-    focus = "#323445";
-    foreground = "#e4e4e4";
-    active = "#f1ffff";
-    inactive = "#615f5f";
-    urgent = "#ffbca2";
+    surface = "#121a24";
+    surfaceAlpha = "#121a24e8";
+    surfaceRgba = "rgba(18, 26, 36, 0.91)";
+    surfaceElevated = "#182230";
+    surfaceHover = "#1d2a3a";
 
-    blue1 = "#052346";
-    blue2 = "#04385e";
-    blue3 = "#0b506e";
-    blue4 = "#057ba6";
-    blue5 = "#0F94D2";
+    border = "#26364a";
+    foreground = "#e6edf5";
+    foregroundMuted = "#8e9bab";
+    inactive = "#536174";
 
-    green = "#8bd49c";
-    yellow = "#f6c177";
-    purple = "#c4a7e7";
+    accent = "#2f6ea8";
+    accentActive = "#3b82c4";
+    accentSoft = "#183b5d";
+
+    success = "#8bd49c";
+    warning = "#f6c177";
+    urgent = "#ff9b8f";
   };
 
   fonts = {
+    interface = "Noto Sans";
     monospace = "JetBrainsMono Nerd Font";
-    waybar = "JetBrainsMono Nerd Font, Font Awesome 6 Free";
+    waybar = "Noto Sans, JetBrainsMono Nerd Font";
     size = {
       small = 10;
       normal = 11;
-      bar = 12;
+      bar = 13;
     };
+  };
+
+  metrics = {
+    radius = 9;
+    radiusSmall = 7;
+    borderWidth = 1;
+    barHeight = 38;
   };
 
   icons = {

@@ -1,20 +1,81 @@
-{ ... }:
+{ config, pkgs, ... }:
 
 let
-  colors = {
-    background = "#0f101a";
-    foreground = "#e4e4e4";
-    grey = "#37383b";
-    focus = "#323445";
-    active = "#f1ffff";
-    inactive = "#615f5f";
-    urgent = "#ffbca2";
-    blue1 = "#052346";
-    blue2 = "#04385e";
-    blue3 = "#0b506e";
-    blue4 = "#057ba6";
-    blue5 = "#0F94D2";
-  };
+  theme = import ./theme.nix;
+  c = theme.colors;
+  fonts = theme.fonts;
+  metrics = theme.metrics;
+
+  audioMenu = pkgs.writeShellScript "waybar-audio-menu" ''
+    set -eu
+
+    choice="$(${pkgs.rofi}/bin/rofi -dmenu -i -p "Audio" <<'MENU'
+Toggle mute
+Volume +5%
+Volume -5%
+Open audio settings
+MENU
+    )" || exit 0
+
+    case "$choice" in
+      "Toggle mute") ${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle ;;
+      "Volume +5%") ${pkgs.wireplumber}/bin/wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+ ;;
+      "Volume -5%") ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%- ;;
+      "Open audio settings") ${pkgs.pavucontrol}/bin/pavucontrol >/dev/null 2>&1 & ;;
+    esac
+  '';
+
+  networkMenu = pkgs.writeShellScript "waybar-network-menu" ''
+    set -eu
+
+    wifi_state="$(${pkgs.networkmanager}/bin/nmcli -t -f WIFI general 2>/dev/null || true)"
+    if [ "$wifi_state" = "enabled" ]; then
+      toggle_label="Disable Wi-Fi"
+    else
+      toggle_label="Enable Wi-Fi"
+    fi
+
+    choice="$(${pkgs.rofi}/bin/rofi -dmenu -i -p "Network" <<MENU
+$toggle_label
+Connect to Wi-Fi…
+Open advanced settings
+MENU
+    )" || exit 0
+
+    case "$choice" in
+      "Enable Wi-Fi") ${pkgs.networkmanager}/bin/nmcli radio wifi on ;;
+      "Disable Wi-Fi") ${pkgs.networkmanager}/bin/nmcli radio wifi off ;;
+      "Open advanced settings") ${pkgs.networkmanagerapplet}/bin/nm-connection-editor >/dev/null 2>&1 & ;;
+      "Connect to Wi-Fi…")
+        ${pkgs.networkmanager}/bin/nmcli device wifi rescan >/dev/null 2>&1 || true
+        network="$(${pkgs.networkmanager}/bin/nmcli -t -f SSID,SIGNAL,SECURITY device wifi list \
+          | ${pkgs.gawk}/bin/awk -F: 'NF && $1 != "" && !seen[$1]++ { printf "%-34s  %3s%%  %s\n", $1, $2, ($3 == "" ? "open" : $3) }' \
+          | ${pkgs.rofi}/bin/rofi -dmenu -i -p "Wi-Fi")" || exit 0
+        ssid="$(printf '%s' "$network" | ${pkgs.gawk}/bin/awk '{sub(/[[:space:]]+[0-9]+%.*$/, ""); sub(/[[:space:]]+$/, ""); print}')"
+        [ -n "$ssid" ] && ${pkgs.networkmanager}/bin/nmcli device wifi connect "$ssid"
+        ;;
+    esac
+  '';
+
+  batteryMenu = pkgs.writeShellScript "waybar-battery-menu" ''
+    set -eu
+    choice="$(${pkgs.rofi}/bin/rofi -dmenu -i -p "Power" <<'MENU'
+Lock
+Suspend
+Log out
+Restart
+Shut down
+MENU
+    )" || exit 0
+
+    case "$choice" in
+      "Lock") ${pkgs.hyprlock}/bin/hyprlock ;;
+      "Suspend") ${pkgs.systemd}/bin/systemctl suspend ;;
+      "Log out") ${pkgs.hyprland}/bin/hyprctl dispatch exit ;;
+      "Restart") ${pkgs.systemd}/bin/systemctl reboot ;;
+      "Shut down") ${pkgs.systemd}/bin/systemctl poweroff ;;
+    esac
+  '';
 in
 {
   programs.waybar = {
@@ -24,8 +85,11 @@ in
       mainBar = {
         layer = "top";
         position = "top";
-        height = 28;
-        spacing = 0;
+        height = metrics.barHeight;
+        spacing = 4;
+        margin-top = 6;
+        margin-left = 8;
+        margin-right = 8;
 
         modules-left = [
           "custom/distro"
@@ -38,63 +102,90 @@ in
         modules-right = [
           "pulseaudio"
           "network"
-          "clock#date"
-          "clock#time"
+          "bluetooth"
           "battery"
-          "tray"
+          "custom/notifications"
+          "clock"
         ];
 
         "custom/distro" = {
-          format = "  ";
+          format = theme.icons.distro;
           tooltip = false;
+          on-click = "rofi -show drun";
         };
 
         "hyprland/workspaces" = {
           disable-scroll = true;
           all-outputs = true;
           format = "{icon}";
+
           persistent-workspaces = {
             "1" = [];
             "2" = [];
             "3" = [];
             "4" = [];
           };
+
           format-icons = {
-            "1" = "";
-            "2" = "";
-            "3" = "";
-            "4" = "󰉋";
-            default = "";
+            active = "━";
+            visible = "━";
+            empty = "•";
+            default = "•";
+            urgent = "●";
           };
         };
 
         "hyprland/window" = {
           format = "{}";
-          max-length = 80;
+          max-length = 24;
           separate-outputs = true;
+
+          rewrite = {
+            "com\\.mitchellh\\.ghostty" = "Ghostty";
+            ".*Mozilla Firefox.*" = "Firefox";
+            ".*Nemo.*" = "Files";
+          };
         };
 
         pulseaudio = {
-          format = "  {volume}%";
-          format-muted = "󰖁 muted";
+          format = "{icon}  {volume}%";
+          format-muted = "󰖁";
+          format-icons = {
+            headphone = "";
+            hands-free = "󰋎";
+            headset = "󰋎";
+            phone = "";
+            portable = "";
+            car = "";
+            default = [ "" "" "" ];
+          };
           scroll-step = 2;
-          on-click = "pavucontrol";
+          on-click = "${audioMenu}";
+          on-click-right = "${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+          tooltip-format = "Volume: {volume}%\nClick for quick controls";
         };
 
         network = {
-          format-wifi = "  {essid}";
-          format-ethernet = "󰈀  wired";
-          format-disconnected = "󰖪  offline";
-          tooltip-format = "{ifname}: {ipaddr}";
+          format-wifi = "";
+          format-ethernet = "󰈀";
+          format-disconnected = "󰖪";
+          on-click = "${networkMenu}";
+          tooltip-format-wifi = "{essid}\nSignal: {signalStrength}%\n{ipaddr}";
+          tooltip-format-ethernet = "Ethernet\n{ipaddr}";
+          tooltip-format-disconnected = "Network disconnected";
         };
 
-        "clock#date" = {
-          format = "  {:%a %d/%m/%Y}";
-          tooltip-format = "{:%A, %d %B %Y}";
-        };
-
-        "clock#time" = {
-          format = "  {:%H:%M}";
+        bluetooth = {
+          format = "";
+          format-disabled = "";
+          format-off = "";
+          format-on = "";
+          format-connected = "";
+          format-connected-battery = "";
+          tooltip-format = "Bluetooth";
+          tooltip-format-connected = "{device_alias}";
+          tooltip-format-connected-battery = "{device_alias} · {device_battery_percentage}%";
+          on-click = "${pkgs.blueman}/bin/blueman-manager";
         };
 
         battery = {
@@ -106,11 +197,46 @@ in
           format-charging = "󰂄  {capacity}%";
           format-plugged = "󰚥  {capacity}%";
           format-icons = [ "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
+          on-click = "${batteryMenu}";
+          tooltip-format = "{timeTo}\nClick for power options";
         };
 
-        tray = {
-          icon-size = 16;
-          spacing = 8;
+        "custom/notifications" = {
+          tooltip = false;
+          format = "{icon}";
+          format-icons = {
+            notification = "󱅫";
+            none = "󰂚";
+            dnd-notification = "󰂛";
+            dnd-none = "󰂛";
+            inhibited-notification = "󰂛";
+            inhibited-none = "󰂛";
+            dnd-inhibited-notification = "󰂛";
+            dnd-inhibited-none = "󰂛";
+          };
+          return-type = "json";
+          exec-if = "which swaync-client";
+          exec = "swaync-client -swb";
+          on-click = "swaync-client -t";
+          on-click-right = "swaync-client -d";
+          escape = true;
+        };
+
+        clock = {
+          format = "{:%a %d %b   %H:%M}";
+          tooltip-format = "<tt>{calendar}</tt>";
+          calendar = {
+            mode = "month";
+            weeks-pos = "right";
+            on-scroll = 1;
+            format = {
+              months = "<span color='${c.accentActive}'><b>{}</b></span>";
+              days = "<span color='${c.foreground}'>{}</span>";
+              weeks = "<span color='${c.foregroundMuted}'>W{}</span>";
+              weekdays = "<span color='${c.accent}'><b>{}</b></span>";
+              today = "<span color='${c.urgent}'><b><u>{}</u></b></span>";
+            };
+          };
         };
       };
     };
@@ -119,84 +245,140 @@ in
       * {
         border: none;
         border-radius: 0;
-        font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free", sans-serif;
-        font-size: 12px;
+        font-family: "${fonts.interface}", "${fonts.monospace}";
+        font-size: ${toString fonts.size.bar}px;
         min-height: 0;
       }
 
       window#waybar {
-        background: rgba(15, 16, 26, 0.95);
-        color: ${colors.foreground};
+        background: ${c.backgroundRgba};
+        color: ${c.foreground};
+        border: ${toString metrics.borderWidth}px solid ${c.border};
+        border-radius: ${toString metrics.radius}px;
+      }
+
+      tooltip {
+        background: ${c.surfaceRgba};
+        color: ${c.foreground};
+        border: 1px solid ${c.border};
+        border-radius: ${toString metrics.radiusSmall}px;
       }
 
       #custom-distro {
-        background: ${colors.blue5};
-        color: ${colors.active};
-        padding: 0 10px;
-        font-size: 15px;
+        color: ${c.foreground};
+        padding: 0 13px;
+        font-size: 18px;
+      }
+
+      #custom-distro:hover,
+      #pulseaudio:hover,
+      #network:hover,
+      #bluetooth:hover,
+      #battery:hover,
+      #custom-notifications:hover,
+      #clock:hover {
+        background: ${c.surfaceHover};
       }
 
       #workspaces {
-        background: ${colors.background};
-        padding: 0 4px;
+        padding: 0 8px;
       }
 
       #workspaces button {
-        color: ${colors.inactive};
-        padding: 0 8px;
-        margin: 0 1px;
+        min-width: 16px;
+        min-height: 0;
+
+        padding: 0 3px;
+        margin: 0;
+
+        color: ${c.inactive};
+        background: transparent;
+        background-image: none;
+
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        text-shadow: none;
+
+        font-family: "${fonts.monospace}";
+        font-size: 12px;
+        font-weight: 400;
       }
 
       #workspaces button.active {
-        color: ${colors.active};
-        background: ${colors.focus};
+        color: ${c.accentActive};
+        font-size: 14px;
+      }
+
+      #workspaces button.visible {
+        color: ${c.accent};
+        font-size: 14px;
+      }
+
+      #workspaces button.empty {
+        color: ${c.inactive};
+        font-size: 14px;
+        opacity: 0.6;
       }
 
       #workspaces button.urgent {
-        color: ${colors.background};
-        background: ${colors.urgent};
+        color: ${c.urgent};
+        font-size: 14px;
+      }
+
+      #workspaces button:hover {
+        color: ${c.foreground};
+        background: transparent;
+        background-image: none;
+        box-shadow: none;
+        text-shadow: none;
       }
 
       #window {
-        color: ${colors.foreground};
+        color: ${c.foreground};
         padding: 0 12px;
+        font-weight: 500;
       }
 
       #pulseaudio,
       #network,
-      #clock.date,
-      #clock.time,
+      #bluetooth,
       #battery,
-      #tray {
-        background: ${colors.grey};
-        color: ${colors.foreground};
-        padding: 0 10px;
-        margin: 0 0 0 1px;
+      #custom-notifications,
+      #clock {
+        color: ${c.foreground};
+        padding: 0 11px;
+        margin: 4px 0;
+        border-radius: ${toString metrics.radiusSmall}px;
       }
 
-      #pulseaudio {
-        background: ${colors.blue2};
+      #pulseaudio.muted,
+      #network.disconnected {
+        color: ${c.foregroundMuted};
       }
 
-      #network {
-        background: ${colors.blue3};
-      }
-
-      #clock.date {
-        background: ${colors.blue4};
-      }
-
-      #clock.time {
-        background: ${colors.blue5};
+      #bluetooth.disabled,
+      #bluetooth.off,
+      #bluetooth.no-controller {
+        color: ${c.foregroundMuted};
       }
 
       #battery.warning {
-        color: ${colors.urgent};
+        color: ${c.warning};
       }
 
       #battery.critical {
-        color: ${colors.urgent};
-        font-weight: bold;
+        color: ${c.urgent};
+        font-weight: 700;
+      }
+
+      #custom-notifications.notification {
+        color: ${c.accentActive};
+      }
+
+      #clock {
+        margin-right: 5px;
+        padding-right: 13px;
       }
     '';
   };
