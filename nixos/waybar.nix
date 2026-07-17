@@ -127,11 +127,11 @@ in
           };
 
           format-icons = {
-            active = "━";
-            visible = "━";
-            empty = "•";
-            default = "•";
-            urgent = "●";
+            active = "●";
+            visible = "●";
+            empty = "■";
+            default = "■";
+            urgent = "■";
           };
         };
 
@@ -285,9 +285,7 @@ in
       }
 
       #workspaces button {
-        min-width: 16px;
-        min-height: 0;
-
+        min-width: 18px;
         padding: 0 3px;
         margin: 0;
 
@@ -296,40 +294,38 @@ in
         background-image: none;
 
         border: none;
-        border-radius: 0;
         box-shadow: none;
         text-shadow: none;
 
-        font-family: "${fonts.monospace}";
-        font-size: 12px;
-        font-weight: 400;
+        font-family: "DejaVu Sans", "${fonts.monospace}";
+        font-size: 16px;
+        font-weight: 700;
       }
 
       #workspaces button.active {
         color: ${c.accentActive};
-        font-size: 14px;
+        font-size: 20px;
       }
 
       #workspaces button.visible {
         color: ${c.accent};
-        font-size: 14px;
+        font-size: 20px;
       }
 
       #workspaces button.empty {
         color: ${c.inactive};
-        font-size: 14px;
-        opacity: 0.6;
+        font-size: 13px;
+        opacity: 0.75;
       }
 
       #workspaces button.urgent {
         color: ${c.urgent};
-        font-size: 14px;
+        font-size: 15px;
       }
 
       #workspaces button:hover {
         color: ${c.foreground};
         background: transparent;
-        background-image: none;
         box-shadow: none;
         text-shadow: none;
       }
