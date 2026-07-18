@@ -8,7 +8,7 @@
     ./modules/graphics.nix
     ./system-packages.nix
   ];
-  
+
   # Host identity.
   networking.hostName = "coder";
 
@@ -46,7 +46,7 @@
     layout = "us";
     variant = "intl";
   };
-  
+
   # No suspend in laptop close
   services.logind.settings.Login = {
     HandleLidSwitch = "ignore";
@@ -103,24 +103,19 @@
     ];
   };
 
-  #services.greetd = {
-  #  enable = true;
-  #  settings = {
-  #    default_session = {
-  #      command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd Hyprland";
-  #      user = "greeter";
-  #    };
-  #  };
-  #};
-
   # Portals for file pickers, screen sharing, screenshots and desktop integration.
   xdg.portal = {
     enable = true;
+
     extraPortals = with pkgs; [
       xdg-desktop-portal-gtk
-      xdg-desktop-portal-hyprland
     ];
-    config.common.default = [ "hyprland" "gtk" ];
+
+    config.hyprland = {
+      default = [ "hyprland" "gtk" ];
+
+      "org.freedesktop.impl.portal.Inhibit" = [ "gtk" ];
+    };
   };
 
   # Useful desktop services.
@@ -135,8 +130,6 @@
     nemo
     nemo-preview
 
-    flat-remix-gtk
-    flat-remix-icon-theme
     adwaita-icon-theme
     shared-mime-info
 
