@@ -9,6 +9,8 @@
     ./system-packages.nix
   ];
 
+  security.pam.services.hyprlock = {};
+
   # Host identity.
   networking.hostName = "coder";
 

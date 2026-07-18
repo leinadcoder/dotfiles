@@ -10,6 +10,7 @@
     ./autostart.nix
     ./hyprpaper.nix
     ./modules/swaync.nix
+    ./modules/hyprlock.nix
   ];
 
   services.kanshi = {

@@ -14,7 +14,6 @@
     swaynotificationcenter
     hyprpaper
     hyprsunset
-    hyprlock
 
     # Audio, brightness and system tray helpers
     pavucontrol
