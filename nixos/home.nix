@@ -11,6 +11,7 @@
     ./hyprpaper.nix
     ./modules/swaync.nix
     ./modules/hyprlock.nix
+    ./modules/hypridle.nix
   ];
 
   services.kanshi = {
