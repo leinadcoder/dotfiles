@@ -68,39 +68,9 @@ in
 
   # Bootloader for UEFI systems.
   # During installation, confirm that the laptop is booting in UEFI mode.
-  boot.loader = {
-    systemd-boot.enable = false;
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
 
-    grub = {
-      enable = true;
-      efiSupport = true;
-      device = "nodev";
-      useOSProber = true;
-
-      extraEntries = ''
-          menuentry "Windows Boot Manager" {
-          insmod part_gpt
-          insmod fat
-          insmod chain
-
-          search \
-            --no-floppy \
-            --efidisk-only \
-            --file \
-            --set=root \
-            /EFI/Microsoft/Boot/bootmgfw.efi
-
-          chainloader /EFI/Microsoft/Boot/bootmgfw.efi
-        }
-      '';
-    };
-
-    efi = {
-      canTouchEfiVariables = true;
-      efiSysMountPoint = "/boot/efi";
-    };
-  };
-  
   # Networking.
   networking.networkmanager.enable = true;
 
