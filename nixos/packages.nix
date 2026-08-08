@@ -14,6 +14,7 @@
     swaynotificationcenter
     hyprpaper
     hyprsunset
+    polkit_gnome
 
     # Audio, brightness and system tray helpers
     pavucontrol

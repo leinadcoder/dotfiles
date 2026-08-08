@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
   wayland.windowManager.hyprland.settings = {
@@ -20,6 +20,9 @@
       # Network and Bluetooth tray applets.
       "nm-applet --indicator"
       "blueman-applet"
+
+      # Graphical authentication agent for Polkit/udisks.
+      "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
     ];
   };
 }
