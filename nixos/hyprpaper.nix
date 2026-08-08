@@ -1,16 +1,18 @@
 { config, ... }:
 
 let
-  # Place your preferred wallpaper at this path, or change the value below later.
-  wallpaper = "${config.home.homeDirectory}/Pictures/wallpapers/nixos-hyprland.png";
+  wallpaper = "${config.home.homeDirectory}/.local/share/wallpapers/nixos-hyprland.png";
 in
 {
-  # Hyprpaper manages the wallpaper in Hyprland.
-  # The actual image is intentionally not committed here; the path is declarative
-  # and easy to replace once we choose the final wallpaper.
+  # Keep the wallpaper inside the dotfiles repository and let Home Manager
+  # deploy it to the user's standard local data directory.
+  home.file.".local/share/wallpapers/nixos-hyprland.png".source =
+    ./assets/wallpapers/nixos-hyprland.png;
+
+  # Hyprpaper configuration.
   home.file.".config/hypr/hyprpaper.conf".text = ''
-preload = ${wallpaper}
-wallpaper = ,${wallpaper}
-splash = false
-'';
+    preload = ${wallpaper}
+    wallpaper = ,${wallpaper}
+    splash = false
+  '';
 }
