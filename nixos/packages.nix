@@ -35,5 +35,11 @@
 
     # Fonts and icons useful for Waybar/workspaces
     nerd-fonts.jetbrains-mono
+
+    # Development runtimes
+    nodejs
+    python3
+    php
+    phpPackages.composer
   ];
 }

@@ -1,6 +1,5 @@
 return {
   'nvim-telescope/telescope.nvim',
-  tag = '0.1.8',
   dependencies = {
     'nvim-lua/plenary.nvim',
     'nvim-tree/nvim-web-devicons',
@@ -12,18 +11,18 @@ return {
     { 'bb', function() require('telescope.builtin').find_buffers() end },
   },
   opts = {
-    defaults =  {
-      mappings =  {
-        i =  {
-          ['<CR>'] =  function(bufnr)
+    defaults = {
+      mappings = {
+        i = {
+          ['<CR>'] = function(bufnr)
             require('telescope.actions.set').edit(bufnr, 'tab drop')
           end,
-        }
+        },
       },
-      file_ignore_patterns =  {
+      file_ignore_patterns = {
         'node_modules',
-        '__pycache__'
-      }
-    }
-  }
+        '__pycache__',
+      },
+    },
+  },
 }
