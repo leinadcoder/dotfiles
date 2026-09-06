@@ -41,5 +41,8 @@
     python3
     php
     phpPackages.composer
+
+    # Other packages
+    gparted
   ];
 }

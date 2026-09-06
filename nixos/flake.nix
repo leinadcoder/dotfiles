@@ -6,6 +6,9 @@
     # to that release and update home-manager to release-26.05 as well.
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
 
+    # Add Hermes Agent flake
+    hermes-agent.url = "github:NousResearch/hermes-agent";
+
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -14,7 +17,7 @@
     pixie-sddm.url = "github:xCaptaiN09/pixie-sddm";
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, hermes-agent, ... }@inputs:
     let
       system = "x86_64-linux";
       username = "leinad";
@@ -30,6 +33,7 @@
 	};
 
         modules = [
+          hermes-agent.nixosModules.default
           ./configuration.nix
           home-manager.nixosModules.home-manager
 

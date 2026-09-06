@@ -100,7 +100,7 @@ in
       efiSysMountPoint = "/boot/efi";
     };
   };
-  
+
   # Networking.
   networking.networkmanager.enable = true;
 
@@ -109,6 +109,7 @@ in
     enable = true;
     powerOnBoot = true;
   };
+
   services.blueman.enable = true;
 
   # Audio through PipeWire/WirePlumber.
@@ -143,6 +144,12 @@ in
       qtdeclarative
       qt5compat
     ];
+  };
+
+  # hermes-agent service
+  services.hermes-agent = {
+    enable = true;
+    addToSystemPackages = true;
   };
 
   # Portals for file pickers, screen sharing, screenshots and desktop integration.
