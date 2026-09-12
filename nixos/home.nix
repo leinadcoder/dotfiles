@@ -5,6 +5,7 @@
     ./packages.nix
     ./hyprland.nix
     ./waybar.nix
+    ./zsh.nix
     ./rofi.nix
     ./ghostty.nix
     ./autostart.nix
