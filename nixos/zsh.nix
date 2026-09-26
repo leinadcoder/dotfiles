@@ -1,6 +1,11 @@
 { pkgs, ... }:
 
 {
+  programs.zoxide = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+
   programs.zsh = {
     enable = true;
 
@@ -33,7 +38,11 @@
       share = true;
     };
 
-    autosuggestion.enable = false;
-    syntaxHighlighting.enable = false;
+    shellAliases = {
+      nrs = "sudo nixos-rebuild switch --flake '/home/leinad/apps/dotfiles/nixos#coder'";
+    };
+
+    autosuggestion.enable = true;
+    syntaxHighlighting.enable = true;
   };
 }
