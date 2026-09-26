@@ -146,12 +146,6 @@ in
     ];
   };
 
-  # hermes-agent service
-  services.hermes-agent = {
-    enable = true;
-    addToSystemPackages = true;
-  };
-
   # Portals for file pickers, screen sharing, screenshots and desktop integration.
   xdg.portal = {
     enable = true;
