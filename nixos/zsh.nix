@@ -21,10 +21,10 @@
       zstyle ':vcs_info:git:*' check-for-changes true
       zstyle ':vcs_info:git:*' stagedstr '+'
       zstyle ':vcs_info:git:*' unstagedstr '!'
-      zstyle ':vcs_info:git:*' formats '(%F{cyan}%b%f%F{red}%c%u%f)'
+      zstyle ':vcs_info:git:*' formats '{%F{214}%b%f%F{160}%c%u%f}'
       precmd() { vcs_info }
 
-      PROMPT='%(?.%F{green}λ%f.%F{red}λ%f) %n: %~ ''${vcs_info_msg_0_} '
+      PROMPT='%(?.%B%F{70}λ%f%b.%B%F{196}λ%f%b) %F{31}%n »%f %F{79}%~%f''${vcs_info_msg_0_}: '
     '';
 
     history = {
