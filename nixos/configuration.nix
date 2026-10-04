@@ -212,9 +212,8 @@ in
     noto-fonts-color-emoji
   ];
 
-  # Keep unfree packages disabled for now.
-  # Firefox/Ghostty/Hyprland do not require allowUnfree.
-  nixpkgs.config.allowUnfree = false;
+  # Require available to add claude-code.
+  nixpkgs.config.allowUnfree = true;
 
   # Do not change this after installation unless you read the release notes.
   # It marks the NixOS version used when this system config was created.

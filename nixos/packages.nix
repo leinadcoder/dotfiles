@@ -37,6 +37,8 @@
     nerd-fonts.jetbrains-mono
 
     # Development runtimes
+    gh
+    claude-code
     nodejs
     python3
     php

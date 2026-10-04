@@ -37,6 +37,30 @@
       }
 
       {
+        profile.name = "dual-2k";
+        profile.outputs = [
+          {
+            criteria = "eDP-1";
+            status = "disable";
+          }
+          {
+            criteria = "Xiaomi Corporation Mi Monitor 6306110019873";  # currently DP-1
+            status = "enable";
+            mode = "2560x1440@60Hz";
+            position = "2560,0";
+            scale = 1.0;
+          }
+          {
+            criteria = "Xiaomi Corporation Mi Monitor 6306110020303";  # currently HDMI-A-1
+            status = "enable";
+            mode = "2560x1440@60Hz";
+            position = "0,0";
+            scale = 1.0;
+          }
+        ];
+      }
+
+      {
         profile.name = "laptop";
         profile.outputs = [
           {
@@ -46,6 +70,13 @@
             position = "0,0";
             scale = 1.0;
           }
+        ];
+      }
+
+      {
+        profile.name = "fallback";
+        profile.outputs = [
+          { criteria = "*"; status = "enable"; }
         ];
       }
     ];
