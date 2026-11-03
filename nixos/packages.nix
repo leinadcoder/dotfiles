@@ -38,7 +38,7 @@
 
     # Development runtimes
     gh
-    claude-code
+    unstable.claude-code
     nodejs
     python3
     php

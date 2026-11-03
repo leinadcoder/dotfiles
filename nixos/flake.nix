@@ -6,6 +6,10 @@
     # to that release and update home-manager to release-26.05 as well.
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
 
+    # Unstable channel, used selectively via the `pkgs.unstable.*` overlay
+    # for packages that move too fast for the stable release (e.g. claude-code).
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -14,11 +18,18 @@
     pixie-sddm.url = "github:xCaptaiN09/pixie-sddm";
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, ... }@inputs:
     let
       system = "x86_64-linux";
       username = "leinad";
       hostname = "coder";
+
+      overlay-unstable = final: prev: {
+        unstable = import nixpkgs-unstable {
+          inherit system;
+          config.allowUnfree = true;
+        };
+      };
     in
     {
       nixosConfigurations.${hostname} = nixpkgs.lib.nixosSystem {
@@ -30,6 +41,7 @@
 	};
 
         modules = [
+          ({ ... }: { nixpkgs.overlays = [ overlay-unstable ]; })
           ./configuration.nix
           home-manager.nixosModules.home-manager
 

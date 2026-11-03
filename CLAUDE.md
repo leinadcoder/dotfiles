@@ -13,24 +13,27 @@ The `install` script symlinks `nvim/` to `~/.config/nvim` and `nixos/` to `~/nix
 
 ## NixOS flake
 
+The flake lives in `~/apps/dotfiles/nixos/` (symlinked as `~/nix-conf`). `/etc/nixos/` is left as the installer-generated stub and is **not** the source of truth — do not edit it. The `nrs` zsh alias (defined in `nixos/zsh.nix`) wraps the rebuild command below.
+
 **Rebuild the system after editing any `.nix` file:**
 
 ```bash
-sudo nixos-rebuild switch --flake /etc/nixos#coder
+sudo nixos-rebuild switch --flake ~/apps/dotfiles/nixos#coder
+# or: nrs
 ```
 
-**Update all flake inputs (nixpkgs, home-manager, etc.):**
+**Update all flake inputs (nixpkgs, nixpkgs-unstable, home-manager, etc.):**
 
 ```bash
-cd /etc/nixos
-sudo nix flake update
-sudo nixos-rebuild switch --flake /etc/nixos#coder
+cd ~/apps/dotfiles/nixos
+nix flake update
+sudo nixos-rebuild switch --flake .#coder
 ```
 
 **Check what the flake exposes without building:**
 
 ```bash
-nix flake show /etc/nixos
+nix flake show ~/apps/dotfiles/nixos
 ```
 
 **Collect garbage (old generations):**
@@ -41,7 +44,7 @@ sudo nix-collect-garbage -d
 
 ## Configuration layout
 
-The flake (`flake.nix`) is pinned to `nixos-25.11` / `home-manager release-25.11`.
+The flake (`flake.nix`) is pinned to `nixos-25.11` / `home-manager release-25.11`. A secondary input `nixpkgs-unstable` is exposed via an overlay as `pkgs.unstable.*` — use it in `packages.nix` (e.g. `unstable.claude-code`) for packages that lag too far behind in stable.
 
 **System layer** (`configuration.nix` + imports):
 - `configuration.nix` — base NixOS settings (locale, boot, users, services)
