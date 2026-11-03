@@ -203,6 +203,12 @@ in
     binfmt = true;
   };
 
+  #Nix interactive compile shell
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+  };
+
   # Fonts available system-wide for Waybar/Rofi/Ghostty/icons.
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
