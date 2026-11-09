@@ -12,9 +12,16 @@
     settings = {
       # Default monitor behavior:
       # Use preferred resolution, automatic position and scale 1.
-      # We can later replace this with your exact laptop/external monitor setup.
+      # kanshi (home.nix) owns the real layout and overrides this.
       monitor = [
         ",preferred,auto,1"
+      ];
+
+      # `exec` runs on every config reload (nrs, Super+Ctrl+R). Hyprland
+      # re-applies the monitor rule above on reload, which would turn the
+      # laptop screen back on, so let kanshi re-apply its profile.
+      exec = [
+        "kanshictl reload"
       ];
 
       # Environment variables commonly needed for Wayland desktop apps.

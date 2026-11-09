@@ -1,5 +1,28 @@
-{ ... }:
+{ pkgs, ... }:
 
+let
+  # Switch between kanshi display profiles (defined in home.nix).
+  # Usage: display-profile only|extended
+  # Tries each candidate in order; kanshi rejects profiles that don't match
+  # the connected monitors, so the first one that fits wins.
+  displayProfile = pkgs.writeShellScript "display-profile" ''
+    case "$1" in
+      only)     candidates="xiaomi-only external-only" ;;
+      extended) candidates="xiaomi-extended external-extended" ;;
+      *)        echo "usage: display-profile only|extended" >&2; exit 2 ;;
+    esac
+
+    for p in $candidates; do
+      if ${pkgs.kanshi}/bin/kanshictl switch "$p" >/dev/null 2>&1; then
+        ${pkgs.libnotify}/bin/notify-send -t 2000 "Display" "Profile: $p"
+        exit 0
+      fi
+    done
+
+    ${pkgs.libnotify}/bin/notify-send -t 3000 "Display" "No '$1' profile matches the connected monitors"
+    exit 1
+  '';
+in
 {
   wayland.windowManager.hyprland.settings = {
     "$mod" = "SUPER";
@@ -57,6 +80,10 @@
       # hyprsunset service/process to be started from autostart.nix later.
       "$mod, R, exec, hyprctl hyprsunset temperature 3500"
       "$mod SHIFT, R, exec, hyprctl hyprsunset identity"
+
+      # ---------- Displays (kanshi profiles) ----------
+      "$mod, F1, exec, ${displayProfile} only"      # external only, laptop off
+      "$mod, F2, exec, ${displayProfile} extended"  # external + laptop
 
       # ---------- Workspaces ----------
       "$mod, 1, workspace, 1"
