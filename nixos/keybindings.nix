@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
 let
-  # Switch between kanshi display profiles (defined in home.nix).
+  # Switch between kanshi display profiles (defined in display-profiles.nix).
   # Usage: display-profile only|extended
   # Tries each candidate in order; kanshi rejects profiles that don't match
   # the connected monitors, so the first one that fits wins.
