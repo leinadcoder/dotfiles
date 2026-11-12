@@ -25,12 +25,12 @@ let
     ${lib.concatMapStrings (o: "  ${renderOutput o}\n") p.profile.outputs}}
   '';
 
-  background = ../local-themes/pixie-deep-blue/assets/sddm-deep-blue.jpg;
+  background = ../assets/greeter/background.jpg;
 
   # regreet has no avatar widget; the CSS paints this pre-cropped circle
   # as a background image above the greeting label.
   avatar = pkgs.runCommand "greeter-avatar.png" { nativeBuildInputs = [ pkgs.imagemagick ]; } ''
-    magick ${../local-themes/pixie-deep-blue/assets/avatar-deep-blue.png} \
+    magick ${../assets/greeter/avatar.png} \
       -resize 256x256^ -gravity center -extent 256x256 \
       \( -size 256x256 xc:black -fill white -draw "circle 128,128 128,0" \) \
       -alpha off -compose CopyOpacity -composite png:$out

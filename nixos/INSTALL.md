@@ -230,7 +230,6 @@ rofi.nix
 ghostty.nix
 theme.nix
 autostart.nix
-mako.nix
 hyprpaper.nix
 ```
 
@@ -457,7 +456,6 @@ nixos-config/
         ├── ghostty.nix
         ├── theme.nix
         ├── autostart.nix
-        ├── mako.nix
         └── hyprpaper.nix
 ```
 

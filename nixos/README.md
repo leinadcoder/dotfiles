@@ -16,7 +16,7 @@ Configuración base generada para el host `coder` y el usuario `leinad`.
 - `ghostty.nix`: terminal.
 - `theme.nix`: paleta centralizada.
 - `autostart.nix`: procesos de inicio de sesión.
-- `mako.nix`: notificaciones.
+- `modules/swaync.nix`: notificaciones.
 - `hyprpaper.nix`: wallpaper.
 
 ## Pendiente durante instalación

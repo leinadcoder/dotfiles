@@ -66,7 +66,6 @@ The flake (`flake.nix`) is pinned to `nixos-25.11` / `home-manager release-25.11
 - `zsh.nix` — shell
 - `autostart.nix` — session autostart
 - `hyprpaper.nix` — wallpaper (expects image at `~/Pictures/wallpapers/nixos-hyprland.jpg`)
-- `mako.nix` — notifications (replaced by `modules/swaync.nix`)
 - `modules/hyprlock.nix` — screen lock
 - `modules/hypridle.nix` — idle daemon
 - `modules/swaync.nix` — notification center
