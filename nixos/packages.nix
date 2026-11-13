@@ -7,6 +7,7 @@
     # Main apps
     ghostty
     firefox
+    brave
 
     # Launcher / bar / desktop services
     rofi
