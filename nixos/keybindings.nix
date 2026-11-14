@@ -9,8 +9,8 @@ let
   # the connected monitors, so the first one that fits wins.
   displayProfile = pkgs.writeShellScript "display-profile" ''
     case "$1" in
-      only)     candidates="xiaomi-only external-only" ;;
-      extended) candidates="xiaomi-extended external-extended" ;;
+      only)     candidates="xiaomi-only lg-only external-only" ;;
+      extended) candidates="xiaomi-extended lg-extended external-extended" ;;
       *)        echo "usage: display-profile only|extended" >&2; exit 2 ;;
     esac
 

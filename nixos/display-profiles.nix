@@ -5,8 +5,6 @@
 # connected, so specific monitors go before the generic "*" profiles.
 # Profiles sharing the same outputs ("<name>-only" / "<name>-extended")
 # are switched at runtime with Super+F1 / Super+F2 (see keybindings.nix).
-# TODO: add lg-only / lg-extended (match by description, 3840x2160 @ 1.5)
-# and list them in the display-profile script in keybindings.nix.
 [
   {
     profile.name = "dual-2k";
@@ -66,6 +64,44 @@
         mode = "2560x1440@60Hz";
         position = "1920,0";
         scale = 1.0;
+      }
+    ];
+  }
+
+  # ---------- LG 4K (3840x2160 @ 1.5 = 2560x1440 logical) ----------
+  {
+    profile.name = "lg-only";
+    profile.outputs = [
+      {
+        criteria = "eDP-1";
+        status = "disable";
+      }
+      {
+        criteria = "LG Electronics LG HDR 4K *";
+        status = "enable";
+        mode = "3840x2160@60Hz";
+        position = "0,0";
+        scale = 1.5;
+      }
+    ];
+  }
+
+  {
+    profile.name = "lg-extended";
+    profile.outputs = [
+      {
+        criteria = "eDP-1";
+        status = "enable";
+        mode = "1920x1080@60Hz";
+        position = "0,0";
+        scale = 1.0;
+      }
+      {
+        criteria = "LG Electronics LG HDR 4K *";
+        status = "enable";
+        mode = "3840x2160@60Hz";
+        position = "1920,0";
+        scale = 1.5;
       }
     ];
   }
