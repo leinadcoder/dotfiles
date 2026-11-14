@@ -1,5 +1,17 @@
 { pkgs, ... }:
 
+let
+  # waybar duplicates its bars when outputs are reconfigured, so reload it after
+  # each profile. SIGUSR2 kills a waybar still starting up, hence the age check.
+  reloadWaybar = pkgs.writeShellScript "reload-waybar" ''
+    sleep 1
+    for pid in $(${pkgs.procps}/bin/pgrep -f '^waybar'); do
+      if [ "$(( $(${pkgs.procps}/bin/ps -o etimes= -p "$pid") ))" -ge 3 ]; then
+        kill -USR2 "$pid"
+      fi
+    done
+  '';
+in
 {
   imports = [
     ./packages.nix
@@ -17,7 +29,9 @@
 
   services.kanshi = {
     enable = true;
-    settings = import ./display-profiles.nix;
+    settings = map
+      (p: p // { profile = p.profile // { exec = [ "${reloadWaybar}" ]; }; })
+      (import ./display-profiles.nix);
   };
 
   gtk = {
