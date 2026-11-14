@@ -5,6 +5,7 @@ let
   c = theme.colors;
   fonts = theme.fonts;
   metrics = theme.metrics;
+  winvol = "${import ./volume-curve.nix { inherit pkgs; }}/bin/winvol";
 
   audioMenu = pkgs.writeShellScript "waybar-audio-menu" ''
     set -eu
@@ -19,8 +20,8 @@ MENU
 
     case "$choice" in
       "Toggle mute") ${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle ;;
-      "Volume +5%") ${pkgs.wireplumber}/bin/wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+ ;;
-      "Volume -5%") ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%- ;;
+      "Volume +5%") ${winvol} up 5 ;;
+      "Volume -5%") ${winvol} down 5 ;;
       "Open audio settings") ${pkgs.pavucontrol}/bin/pavucontrol >/dev/null 2>&1 & ;;
     esac
   '';
@@ -100,7 +101,7 @@ in
         modules-center = [];
 
         modules-right = [
-          "pulseaudio"
+          "custom/volume"
           "network"
           "bluetooth"
           "battery"
@@ -147,22 +148,15 @@ in
           };
         };
 
-        pulseaudio = {
-          format = "{icon}  {volume}%";
-          format-muted = "󰖁";
-          format-icons = {
-            headphone = "";
-            hands-free = "󰋎";
-            headset = "󰋎";
-            phone = "";
-            portable = "";
-            car = "";
-            default = [ "" "" "" ];
-          };
-          scroll-step = 2;
+        # Volume shown and stepped on a Windows-like curve (see volume-curve.nix).
+        "custom/volume" = {
+          format = "{}";
+          return-type = "json";
+          exec = "${winvol} watch";
           on-click = "${audioMenu}";
           on-click-right = "${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
-          tooltip-format = "Volume: {volume}%\nClick for quick controls";
+          on-scroll-up = "${winvol} up 2";
+          on-scroll-down = "${winvol} down 2";
         };
 
         network = {
@@ -271,7 +265,7 @@ in
       }
 
       #custom-distro:hover,
-      #pulseaudio:hover,
+      #custom-volume:hover,
       #network:hover,
       #bluetooth:hover,
       #battery:hover,
@@ -336,7 +330,7 @@ in
         font-weight: 500;
       }
 
-      #pulseaudio,
+      #custom-volume,
       #network,
       #bluetooth,
       #battery,
@@ -348,7 +342,7 @@ in
         border-radius: ${toString metrics.radiusSmall}px;
       }
 
-      #pulseaudio.muted,
+      #custom-volume.muted,
       #network.disconnected {
         color: ${c.foregroundMuted};
       }

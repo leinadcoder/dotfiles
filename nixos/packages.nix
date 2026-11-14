@@ -19,6 +19,7 @@
 
     # Audio, brightness and system tray helpers
     pavucontrol
+    (import ./volume-curve.nix { inherit pkgs; }) # winvol CLI
     brightnessctl
     networkmanagerapplet
     blueman

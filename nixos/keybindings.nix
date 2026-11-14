@@ -1,6 +1,8 @@
 { pkgs, ... }:
 
 let
+  winvol = "${import ./volume-curve.nix { inherit pkgs; }}/bin/winvol";
+
   # Switch between kanshi display profiles (defined in display-profiles.nix).
   # Usage: display-profile only|extended
   # Tries each candidate in order; kanshi rejects profiles that don't match
@@ -102,9 +104,9 @@ in
 
     bindel = [
       # ---------- Multimedia Keys ----------
-      # PipeWire/WirePlumber-friendly replacements for amixer.
-      ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-"
-      ", XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%+"
+      # Windows-like volume curve (see volume-curve.nix).
+      ", XF86AudioLowerVolume, exec, ${winvol} down 2"
+      ", XF86AudioRaiseVolume, exec, ${winvol} up 2"
       ", XF86MonBrightnessUp, exec, brightnessctl set +10%"
       ", XF86MonBrightnessDown, exec, brightnessctl set 10%-"
     ];

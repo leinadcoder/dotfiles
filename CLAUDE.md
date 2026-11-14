@@ -56,6 +56,7 @@ The flake (`flake.nix`) is pinned to `nixos-25.11` / `home-manager release-25.11
 
 **Shared data**:
 - `display-profiles.nix` — kanshi profiles (pure list), used by `home.nix` and `modules/greeter.nix`; edit monitor layouts here
+- `volume-curve.nix` — `winvol` script (function `{ pkgs }:`, imported by `waybar.nix`, `keybindings.nix`, `packages.nix`): volume keys/scroll and the waybar `custom/volume` module on a Windows-like curve `system = (win/100)^exponent`; tune `exponent` there
 
 **Home Manager layer** (`home.nix` imports everything else):
 - `packages.nix` — user packages
