@@ -7,6 +7,7 @@
     ./hardware-configuration.nix
     ./modules/graphics.nix
     ./modules/greeter.nix
+    ./modules/audio-loudness.nix
     ./system-packages.nix
   ];
 
