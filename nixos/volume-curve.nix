@@ -61,11 +61,11 @@ pkgs.writeShellApplication {
         '.[] | select(.name == $n) | "\(.active_port // "")|\(.properties["device.form_factor"] // "")"')
 
       case "$info" in
-        *headphone*|*headset*|*hands-free*) icon="" ;;
+        *headphone*|*headset*|*hands-free*) icon=$'\xef\x80\xa5' ;;
         *)
-          if   (( w < 34 )); then icon=""
-          elif (( w < 67 )); then icon=""
-          else icon=""; fi ;;
+          if   (( w < 34 )); then icon=$'\xef\x80\xa6'
+          elif (( w < 67 )); then icon=$'\xef\x80\xa7'
+          else icon=$'\xef\x80\xa8'; fi ;;
       esac
 
       if [ "$muted" = "yes" ]; then
@@ -80,14 +80,16 @@ pkgs.writeShellApplication {
     }
 
     # Print status now and on every sink/default-device change (for waybar).
+    # Failures are swallowed so the loop survives the audio server not being
+    # up yet at login (or restarting); waybar never restarts a dead exec.
     watch() {
       while true; do
-        status
+        status || true
         pactl subscribe 2>/dev/null | while read -r line; do
           case "$line" in
-            *" on sink #"*|*" on server"*) status ;;
+            *" on sink #"*|*" on server"*) status || true ;;
           esac
-        done
+        done || true
         sleep 1
       done
     }
