@@ -287,8 +287,17 @@ in
   xdg.mimeApps = {
     enable = true;
 
+    # mimeapps.list is a read-only Home Manager symlink, so browsers can't set
+    # themselves as default; declare it here or the first installed one wins.
     defaultApplications = {
       "inode/directory" = "nemo.desktop";
+
+      "text/html" = "firefox.desktop";
+      "application/xhtml+xml" = "firefox.desktop";
+      "x-scheme-handler/http" = "firefox.desktop";
+      "x-scheme-handler/https" = "firefox.desktop";
+      "x-scheme-handler/about" = "firefox.desktop";
+      "x-scheme-handler/unknown" = "firefox.desktop";
     };
   };
 }
