@@ -1,14 +1,20 @@
 { pkgs, ... }:
 
 let
-  # waybar duplicates its bars when outputs are reconfigured, so reload it after
-  # each profile. SIGUSR2 kills a waybar still starting up, hence the age check.
+  # waybar duplicates its bars, or leaves them at the old output position, when
+  # outputs are reconfigured, so reload it after each profile. At login kanshi
+  # applies the profile while waybar is still starting; SIGUSR2 would kill it
+  # then, so wait until it is past startup instead of skipping the reload
+  # (skipping left the bar off-screen until the next profile switch).
   reloadWaybar = pkgs.writeShellScript "reload-waybar" ''
     sleep 1
     for pid in $(${pkgs.procps}/bin/pgrep -f '^waybar'); do
-      if [ "$(( $(${pkgs.procps}/bin/ps -o etimes= -p "$pid") ))" -ge 3 ]; then
-        kill -USR2 "$pid"
-      fi
+      for _ in $(seq 20); do
+        age=$(${pkgs.procps}/bin/ps -o etimes= -p "$pid") || continue 2
+        [ "$(( age ))" -ge 3 ] && break
+        sleep 0.5
+      done
+      kill -USR2 "$pid" 2>/dev/null || true
     done
   '';
 in
